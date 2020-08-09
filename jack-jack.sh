@@ -27,10 +27,13 @@ dirs=( $(printf '%b\n' "${raw_dirs[@]}" | grep -E "${1}"$) )
 
 count="$(printf '%b\n' "${dirs[@]}" | wc -l)"
 if [[ $count -gt 1 ]]; then
-	printf '%b\n' "${dirs[@]}" | sed = | sed 'N;s/\n/ /'
+	#printf '%b\n' "${dirs[@]}" | sed = | sed 'N;s/\n/ /'
+	for i in "${!dirs[@]}"; do
+		printf '%s %s\n' "$i" "${dirs[$i]}"
+	done
 	printf "Choose directory (enter number): "
 	read number # handle incorrect input here
-	cd $(printf '%b\n' "${dirs[@]:$number-1:1}")
+	cd $(printf '%b\n' "${dirs[@]:$number:1}")
 else
 	cd "$(printf '%b\n' "${dirs}")"
 fi
