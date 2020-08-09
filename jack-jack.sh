@@ -18,11 +18,11 @@
 #  dependencies
 #-----------------------------------
 
-shopt -s globstar
+if [[ $SHELL = "/usr/bin/bash" ]]; then
+	shopt -s globstar
+fi
 
 raw_dirs=( $(printf '%q\n' ~/**/. | sed 's/\/\.//' ) ) # handle spaces in file names here
-#raw_dirs=( "$(printf '%q\n' ~/**/. | xargs -d$'\n' dirname | sed 's/\/\.//g' )" ) # handle spaces in file names here
-#dirs=( "$(printf "%q " ~/**/. | xargs -0 dirname | sort | uniq | grep -w "${1}\$")" ) # handle spaces in file names here
 dirs=( $(printf '%b\n' "${raw_dirs[@]}" | grep -E "${1}"$) )
 
 count="$(printf '%b\n' "${dirs[@]}" | wc -l)"
@@ -30,10 +30,9 @@ if [[ $count -gt 1 ]]; then
 	printf '%b\n' "${dirs[@]}" | sed = | sed 'N;s/\n/ /'
 	printf "Choose directory (enter number): "
 	read number # handle incorrect input here
-	cd $(printf '%b\n' "${dirs[$number-1]}")
+	cd $(printf '%b\n' "${dirs[@]:$number-1:1}")
 else
 	cd "$(printf '%b\n' "${dirs}")"
 fi
 
 return
-
