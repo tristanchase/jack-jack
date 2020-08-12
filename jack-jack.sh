@@ -24,12 +24,10 @@ if [[ $SHELL = $(which bash) ]]; then
 	shopt -s globstar
 fi
 
-dot_dirs=( $(printf '%b\n' ${HOME}/.*/**/ | grep -v /./ | grep -v /../ | sed 's/\/$//g') )
-#dot_dirs=( $(for i in $(printf '%b\n' ~/.*/. | sed 's/\/\.$//g' | grep -v "\."$); do printf '%b\n' "$i"*/**/. | sed 's/\/\.$//g'; done) )
+dot_dirs=( $(printf '%b\n' ${HOME}/.*/**/ | grep -Ev '/\.(\.)?/' | sed 's/\/$//g') )
+#dot_dirs=( $(printf '%b\n' ${HOME}/.*/**/ | grep -v /./ | grep -v /../ | sed 's/\/$//g') )
 raw_dirs=( $(printf '%b\n' ${HOME}/**/ | sed 's/\/$//g') )
-#raw_dirs=( $(printf '%b\n' ~/**/. | sed 's/\/\.//g') )
 raw_dirs=(${raw_dirs[@]} ${dot_dirs[@]})
-#raw_dirs=( $(printf '%b\n' ~/**/. ~/.**/**/. | sed 's/\/\.//g') )
 dirs=( $(printf '%b\n' "${raw_dirs[@]}" | grep -E "${1}"$) )
 
 count="$(printf '%b\n' "${dirs[@]}" | wc -l)"
