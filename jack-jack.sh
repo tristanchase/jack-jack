@@ -24,8 +24,7 @@ if [[ $SHELL = $(which bash) ]]; then
 	shopt -s globstar
 fi
 
-dot_dirs=( $(printf '%b\n' ${HOME}/.*/**/ | grep -Ev '/\.(\.)?/' | sed 's/\/$//g') )
-#dot_dirs=( $(printf '%b\n' ${HOME}/.*/**/ | grep -v /./ | grep -v /../ | sed 's/\/$//g') )
+dot_dirs=( $(printf '%b\n' ${HOME}/.*/**/ | grep -Ev '/\.(\.|cache)?/' | sed 's/\/$//g') )
 raw_dirs=( $(printf '%b\n' ${HOME}/**/ | sed 's/\/$//g') )
 raw_dirs=(${raw_dirs[@]} ${dot_dirs[@]})
 dirs=( $(printf '%b\n' "${raw_dirs[@]}" | grep -E "${1}"$) )
