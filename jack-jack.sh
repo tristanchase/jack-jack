@@ -31,15 +31,21 @@ dirs=( $(printf '%b\n' "${raw_dirs[@]}" | grep -E "${1}"$) )
 
 count="$(printf '%b\n' "${dirs[@]}" | wc -l)"
 if [[ $count -gt 1 ]]; then
-#	if [[ $SHELL = $(which bash) ]]; then
-#		for i in "${!dirs[@]}"; do
-#			printf '%s %s\n' "$i" "${dirs[$i]}"
-#		done
-#	else
-		printf '%b\n' "${dirs[@]}" | sed = | sed 'N;s/\n/ /'
-#	fi
-	printf "Choose directory (enter number): "
-	read number # handle incorrect input here
+	printf '%b\n' "${dirs[@]}" | sed = | sed 'N;s/\n/ /' | more
+	#printf "Choose directory (enter number): "
+	#read number # handle incorrect input here
+	printf "Choose file to open (enter number 1-"${count}", anything else quits): "
+	read number
+	case "${number}" in
+		''|*[!0-9]*) # not a number
+			return 0
+			;;
+		*) # not in range
+			if [[ "${number}" -lt 1 ]] || [[ "${number}" -gt "${count}" ]]; then
+				return 0
+			fi
+			;;
+	esac
 	cd "$(printf '%b\n' "${dirs[@]:$number-1:1}")"
 else
 	cd "$(printf '%b\n' "${dirs}")"
