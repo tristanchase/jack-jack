@@ -12,46 +12,48 @@
 # Created: 2020-08-08T21:41:21-04:00
 # Tristan M. Chase <tristan.m.chase@gmail.com>
 
-# Depends on:
-#  list
-#  of
-#  dependencies
 #-----------------------------------
+# Save current $IFS for return to shell
 OLDIFS=$IFS
 IFS=$'\n'
 
+# Only set this if your $SHELL is bash
 if [[ $SHELL = $(which bash) ]]; then
 	shopt -s globstar
 fi
 
-dot_dirs=( $(printf '%b\n' ${HOME}/.*/**/ | grep -Ev '/\.(\.|cache)?/' | sed 's/\/$//g') )
-raw_dirs=( $(printf '%b\n' ${HOME}/**/ | sed 's/\/$//g') )
-raw_dirs=(${raw_dirs[@]} ${dot_dirs[@]})
-dirs=( $(printf '%b\n' "${raw_dirs[@]}" | grep -E "${1}"$) )
+# Generate a list of directories, weed out ., .., and .cache, and match the ones that end with <arg>
+_dot_dirs=( $(printf '%b\n' ${HOME}/.*/**/ | grep -Ev '/\.(\.|cache)?/' | sed 's/\/$//g') )
+_raw_dirs=( $(printf '%b\n' ${HOME}/**/ | sed 's/\/$//g') )
+_raw_dirs=(${_raw_dirs[@]} ${_dot_dirs[@]})
+_dirs=( $(printf '%b\n' "${_raw_dirs[@]}" | grep -E "${1}"$) )
 
-count="$(printf '%b\n' "${dirs[@]}" | wc -l)"
-if [[ $count -gt 1 ]]; then
-	printf '%b\n' "${dirs[@]}" | sed = | sed 'N;s/\n/ /' | more
-	#printf "Choose directory (enter number): "
-	#read number # handle incorrect input here
-	printf "Choose file to open (enter number 1-"${count}", anything else quits): "
-	read number
-	case "${number}" in
+# If there is more than one match, generate a numbered list and allow user to select by number
+_count="$(printf '%b\n' "${_dirs[@]}" | wc -l)"
+if [[ $_count -gt 1 ]]; then
+	printf '%b\n' "${_dirs[@]}" | sed = | sed 'N;s/\n/ /' | more
+	printf "Choose file to open (enter number 1-"${_count}", anything else quits): "
+	read _number
+	case "${_number}" in
 		''|*[!0-9]*) # not a number
 			return 0
 			;;
 		*) # not in range
-			if [[ "${number}" -lt 1 ]] || [[ "${number}" -gt "${count}" ]]; then
+			if [[ "${_number}" -lt 1 ]] || [[ "${_number}" -gt "${_count}" ]]; then
 				return 0
 			fi
 			;;
 	esac
-	cd "$(printf '%b\n' "${dirs[@]:$number-1:1}")"
+	cd "$(printf '%b\n' "${_dirs[@]:$_number-1:1}")"
 else
-	cd "$(printf '%b\n' "${dirs}")"
+	cd "$(printf '%b\n' "${_dirs}")"
 fi
 
+# Leave variables in their original state upon return
 IFS=$OLDIFS
+
+unset -v _dot_dirs _raw_dirs _dirs _count _number
+
 
 return
 
