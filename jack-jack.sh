@@ -23,15 +23,15 @@ if [[ $SHELL = $(which bash) ]]; then
 fi
 
 # Generate a list of directories, weed out ., .., and .cache, and match the ones that end with <arg>
-_dot_dirs=( $(printf '%b\n' ${HOME}/.*/**/ | grep -Ev '/\.(\.|cache)?/' | sed 's/\/$//g') )
-_raw_dirs=( $(printf '%b\n' ${HOME}/**/ | sed 's/\/$//g') )
+_dot_dirs=( $(printf "%b\n" ${HOME}/.*/**/ | grep -Ev '/\.(\.|cache)?/' | sed 's/\/$//g') )
+_raw_dirs=( $(printf "%b\n" ${HOME}/**/ | sed 's/\/$//g') )
 _raw_dirs=(${_raw_dirs[@]} ${_dot_dirs[@]})
-_dirs=( $(printf '%b\n' "${_raw_dirs[@]}" | grep -E "${1}"$) )
+_dirs=( $(printf "%b\n" "${_raw_dirs[@]}" | grep -E "${1}"$) )
 
 # If there is more than one match, generate a numbered list and allow user to select by number
-_count="$(printf '%b\n' "${_dirs[@]}" | wc -l)"
+_count="$(printf "%b\n" "${_dirs[@]}" | wc -l)"
 if [[ $_count -gt 1 ]]; then
-	printf '%b\n' "${_dirs[@]}" | sed = | sed 'N;s/\n/ /' | more
+	printf "%b\n" "${_dirs[@]}" | sed = | sed 'N;s/\n/ /' | more
 	printf "Choose file to open (enter number 1-"${_count}", anything else quits): "
 	read _number
 	case "${_number}" in
@@ -44,9 +44,9 @@ if [[ $_count -gt 1 ]]; then
 			fi
 			;;
 	esac
-	cd "$(printf '%b\n' "${_dirs[@]:$_number-1:1}")"
+	cd "$(printf "%b\n" "${_dirs[@]:$_number-1:1}")"
 else
-	cd "$(printf '%b\n' "${_dirs}")"
+	cd "$(printf "%b\n" "${_dirs}")"
 fi
 
 # Leave variables in their original state upon return
@@ -54,6 +54,5 @@ IFS=$OLDIFS
 
 unset -v _dot_dirs _raw_dirs _dirs _count _number
 
-
-return
+return 0
 
