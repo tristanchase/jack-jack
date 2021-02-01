@@ -26,12 +26,28 @@ fi
 _dot_dirs=( $(printf "%b\n" ${HOME}/.*/**/ | grep -Ev '/\.(\.|cache)?/' | sed 's/\/$//g') )
 _raw_dirs=( $(printf "%b\n" ${HOME}/**/ | sed 's/\/$//g') )
 _raw_dirs=(${_raw_dirs[@]} ${_dot_dirs[@]})
-_dirs=( $(printf "%b\n" "${_raw_dirs[@]}" | grep -E "${1}"$) )
+_chooser_array=( $(printf "%b\n" "${_raw_dirs[@]}" | grep -E "${1}"$) )
 
 # If there is more than one match, generate a numbered list and allow user to select by number
-_count="$(printf "%b\n" "${_dirs[@]}" | wc -l)"
+#_count="$(printf "%b\n" "${_chooser_array[@]}" | wc -l)"
+_count="${#_chooser_array[@]}"
+_array_keys=(${!_chooser_array[@]})
+function __message__ {
+	printf "%q %q\n" $((_key + 1)) "${_chooser_array[$_key]}"
+}
+_command="cd"
+
+if [[ -z "${_chooser_array}" ]]; then
+	printf "%b\n" "\"${1}\" not found."
+	return
+fi
+
 if [[ $_count -gt 1 ]]; then
-	printf "%b\n" "${_dirs[@]}" | sed = | sed 'N;s/\n/ /' | more
+	for _key in "${_array_keys[@]}"; do
+		#printf "%q %q\n" $((_key + 1)) "${_chooser_array[$_key]}"
+		__message__
+	done
+	#printf "%b\n" "${_chooser_array[@]}" | sed = | sed 'N;s/\n/ /' | more
 	printf "Choose file to open (enter number 1-"${_count}", anything else quits): "
 	read _number
 	case "${_number}" in
@@ -44,15 +60,17 @@ if [[ $_count -gt 1 ]]; then
 			fi
 			;;
 	esac
-	cd "$(printf "%b\n" "${_dirs[@]:$_number-1:1}")"
+	#cd "$(printf "%b\n" "${_chooser_array[@]:$_number-1:1}")"
+	"${_command}" "$(printf "%b\n" "${_chooser_array[@]:$_number-1:1}")"
 else
-	cd "$(printf "%b\n" "${_dirs}")"
+	#cd "$(printf "%b\n" "${_chooser_array}")"
+	"${_command}" "$(printf "%b\n" "${_chooser_array}")"
 fi
 
 # Leave variables in their original state upon return
 IFS=$OLDIFS
 
-unset -v _dot_dirs _raw_dirs _dirs _count _number
+unset -v _dot_dirs _raw_dirs _chooser_array _count _number
 
 return 0
 
