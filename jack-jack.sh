@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # This script should be sourced
+
 #-----------------------------------
 
 #//Usage: jack-jack <dir>
@@ -11,6 +12,28 @@
 
 # Created: 2020-08-08T21:41:21-04:00
 # Tristan M. Chase <tristan.m.chase@gmail.com>
+
+#-----------------------------------
+# TODO Section
+
+#<todo>
+# TODO
+# 1. Rewrite main section
+# 	Look to super-grep
+# 2. Refactor functions
+# 	Look to gen-keys
+# * Insert script
+# * Clean up stray ;'s
+# * Modify command substitution to "$(this_style)"
+# * Rename function_name() to function __function_name__ /\w+\(\)
+# * Rename $variables to "${_variables}" /\$\w+/s+1 @v vEl,{n
+# * Check that _variable="variable definition" (make sure it's in quotes)
+# * Update usage, description, and options section
+# * Update dependencies section
+
+# DONE
+
+#</todo>
 
 #-----------------------------------
 # Save current $IFS for return to shell
