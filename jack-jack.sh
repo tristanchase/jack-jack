@@ -69,7 +69,7 @@ if [[ $_chooser_count -gt 1 ]]; then
 	for _key in "${_chooser_array_keys[@]}"; do
 		#printf "%q %q\n" $((_key + 1)) "${_chooser_array[$_key]}"
 		__chooser_message__
-	done | more
+	done | more -e
 	#printf "%b\n" "${_chooser_array[@]}" | sed = | sed 'N;s/\n/ /' | more
 	printf "Choose file to open (enter number 1-"${_chooser_count}", anything else quits): "
 	read _chooser_number
