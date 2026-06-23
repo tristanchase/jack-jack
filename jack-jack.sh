@@ -2,7 +2,7 @@
 # This script should be sourced
 
 #-----------------------------------
-function __usage__ {
+function __usage_help__ {
 	cat <<HELP_USAGE
 Usage: jack-jack <dir>
 
@@ -48,10 +48,13 @@ HELP_USAGE
 OLDIFS=$IFS
 IFS=$'\n'
 
+shopt -s globstar dotglob
+shopt -s extglob
 # Only set this if your $SHELL is bash
-if [[ $SHELL = $(which bash) ]]; then
-	shopt -s globstar
-fi
+#if [[ $SHELL = $(which bash) ]]; then
+#	shopt -s globstar dotglob
+#	shopt -s extglob
+#fi
 
 #-----------------------------------
 #<main>
@@ -60,15 +63,16 @@ _arg="${1:-}"
 
 # Make sure there is a <dir> to search for; Print usage and exit if <dir> is missing
 if [[ -z "${_arg}" ]]; then
-	__usage__
+	__usage_help__
 	return 2
 fi
 
 # Generate a list of directories, weed out ., .., and .cache, and match the ones that end with <dir>
-_dot_dirs=( $(printf "%b\n" ${HOME}/.*/**/ | grep -Ev '/\.(\.|cache)?/' | sed 's/\/$//g') )
-_raw_dirs=( $(printf "%b\n" ${HOME}/**/ | sed 's/\/$//g') )
-_raw_dirs=(${_raw_dirs[@]} ${_dot_dirs[@]})
-_chooser_array=( $(printf "%b\n" "${_raw_dirs[@]}" | grep -E "${1}"$) )
+_chooser_array=( $(printf "%b\n" $HOME/**/ | grep "${_arg}"/$) )
+#_dot_dirs=( $(printf "%b\n" ${HOME}/.*/**/ | grep -Ev '/\.(\.|cache)?/' | sed 's/\/$//g') )
+#_raw_dirs=( $(printf "%b\n" ${HOME}/**/ | sed 's/\/$//g') )
+#_raw_dirs=(${_raw_dirs[@]} ${_dot_dirs[@]})
+#_chooser_array=( $(printf "%b\n" "${_raw_dirs[@]}" | grep -E "${1}"$) )
 
 # If <dir> is not found, warn user and exit
 if [[ -z "${_chooser_array:-}" ]]; then
@@ -77,16 +81,13 @@ if [[ -z "${_chooser_array:-}" ]]; then
 fi
 
 # If there is more than one match, generate a numbered list and allow user to select by number
-_chooser_message="Choose folder"
+_chooser_message="Choose directory"
+#<chooser>
 _chooser_count="${#_chooser_array[@]}"
 _chooser_array_keys=(${!_chooser_array[@]})
-function __chooser_list__ {
-	printf "%q %q\n" $((_key + 1)) "${_chooser_array[$_key]}"
-}
-
 if [[ "${_chooser_count}" -gt 1 ]]; then
 	for _key in "${_chooser_array_keys[@]}"; do
-		__chooser_list__
+	printf "%q %q\n" $((_key + 1)) "${_chooser_array[$_key]}"
 	done | more -e
 	printf "%b" "${_chooser_message}"
 	printf " (enter number 1-"${_chooser_count}"): "
@@ -101,7 +102,7 @@ else
 	_chooser_number="0"
 fi
 _chosen_item="$(printf "%b\n" "${_chooser_array[@]:$_chooser_number-1:1}")"
-
+#</chooser>
 cd "${_chosen_item}" && pwd; ls
 
 #</main>
