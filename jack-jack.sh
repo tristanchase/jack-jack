@@ -90,7 +90,7 @@ if [[ "${_chooser_count}" -gt 1 ]]; then
 	printf "%q %q\n" $((_key + 1)) "${_chooser_array[$_key]}"
 	done | more -e
 	printf "%b" "${_chooser_message}"
-	printf " (enter number 1-"${_chooser_count}"): "
+	printf " (enter number 1-"${_chooser_count}", anything else quits): "
 	read _chooser_number
 	case "${_chooser_number}" in
 		(''|*[!0-9]*)	 return 3 ;; # not a number
@@ -103,7 +103,7 @@ else
 fi
 _chosen_item="$(printf "%b\n" "${_chooser_array[@]:$_chooser_number-1:1}")"
 #</chooser>
-cd "${_chosen_item}" && pwd; ls
+cd "${_chosen_item}" && pwd; ls -F
 
 #</main>
 
